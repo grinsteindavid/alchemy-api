@@ -1,0 +1,10 @@
+#! /usr/bin/env bash
+set -o allexport; 
+[ -f ../../.env ] && source ../../.env;
+set +o allexport
+
+export NODE_OPTIONS=\"--max_old_space_size=8192\"
+
+rm -rf dist
+mkdir -p dist
+npx tsc --project tsconfig.build.json

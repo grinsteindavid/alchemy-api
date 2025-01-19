@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+set -o allexport; 
+[ -f ../../.env ] && source ../../.env;
+set +o allexport
+
+
+tsc-watch --onSuccess "node --enable-source-maps --inspect=127.0.0.1:9230 -r dotenv/config -r ./logger.js ./dist/src/server/index.js dotenv_config_path=.env dotenv_config_override=true dotenv_config_debug=true" --maxNodeMem 8192

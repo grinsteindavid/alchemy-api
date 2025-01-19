@@ -1,0 +1,8 @@
+#! /usr/bin/env bash
+
+set -o allexport; 
+[ -f ../../.env ] && source ../../.env;
+set +o allexport
+
+export NODE_OPTIONS=\"--max_old_space_size=8192\"
+jest -c jest.config-low-resources.js --watch --onlyChanged  --detectOpenHandles --unhandled-rejections=strict

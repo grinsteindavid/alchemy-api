@@ -1,19 +1,15 @@
-import mongoose, {ConnectOptions} from 'mongoose';
+import mongoose, {Mongoose, ConnectOptions} from 'mongoose';
 import MonoContext from '@simplyhexagonal/mono-context';
 import { MongoMemoryServer } from 'mongodb-memory-server-core';
 
 const { MONGO_URL, NODE_ENV } = process.env
 
-export interface InitMongooseOptions {
-  mongoUrl?: string;
-  appName?: string;
-}
 
-export const initMongoose = async ({ mongoUrl, appName: optionalAppName }: InitMongooseOptions) => {
-  const appName = optionalAppName || MonoContext.getStateValue('appName');
+export const initMongoose = async () => {
+  const appName = MonoContext.getStateValue('appName');
   const logger = MonoContext.getStateValue('logger');
   const mongoMemoryInstance = NODE_ENV === 'jest-test' ? await MongoMemoryServer.create() : undefined;
-  const connectionUrl = mongoMemoryInstance ? mongoMemoryInstance.getUri() : MONGO_URL || String(mongoUrl);
+  const connectionUrl = mongoMemoryInstance ? mongoMemoryInstance.getUri() : MONGO_URL! ;
 
   const connection = mongoose.connection;
 
@@ -44,4 +40,14 @@ export const initMongoose = async ({ mongoUrl, appName: optionalAppName }: InitM
       mongoose,
     },
   });
+};
+
+export const getMongooseClient = () => {
+  const dataSources = MonoContext.getState()['dataSources'] as {
+    mongoose: Mongoose;
+  };
+
+  if (!dataSources.mongoose) throw new Error(`No mongoose client found`);
+
+  return dataSources.mongoose;
 };
