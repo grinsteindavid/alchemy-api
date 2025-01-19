@@ -5,4 +5,5 @@ export interface IUser {
   email: string;
   passwordHash: string;
   salt: string;
+  permissions: string[];
 }

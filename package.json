@@ -49,6 +49,9 @@
     "@types/formidable": "3.4.5"
   },
   "dependencies": {
+    "graphql-compose": "9.0.11",
+    "graphql-compose-mongoose": "9.8.0",
+    "graphql": "16.6.0",
     "table": "6.8.1",
     "fastify-plugin": "2.3.4",
     "fastify": "3.26.0",

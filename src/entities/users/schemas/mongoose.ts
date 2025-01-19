@@ -18,4 +18,5 @@ export const UserSchemaMongoose = new Schema({
   },
   passwordHash: String,
   salt: String,
+  permissions: [String],
 });

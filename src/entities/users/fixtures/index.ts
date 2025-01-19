@@ -8,4 +8,5 @@ export const UserFixture: IUser = {
   email: 'x@test.com',
   lastName: 'Hello',
   firstName: 'World',
+  permissions: ['users']
 };

@@ -10,4 +10,5 @@ export const UserSchemaJoi = Joi.object<IUser>().keys({
     .email({ minDomainSegments: 2, tlds: { allow: false } }),
   passwordHash: Joi.string(),
   salt: Joi.string(),
+  permissions: Joi.array().items(Joi.string()),
 });

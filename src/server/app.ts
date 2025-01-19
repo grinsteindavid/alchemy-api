@@ -19,6 +19,7 @@ import printRoutesPlugin from '../utils/print-routes';
 import { printUndocumentedRoutes } from '../utils/print-undocumented-routes';
 import { registerRoutes } from '../utils/fastify';
 import { registerMongooseModels } from '../utils/mongoose';
+import { generateGraphqlEntityQueryFields } from '../utils/graphql';
 
 const {
   NODE_ENV,
