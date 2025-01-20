@@ -20,6 +20,7 @@ import { printUndocumentedRoutes } from '../utils/print-undocumented-routes';
 import { registerRoutes } from '../utils/fastify';
 import { registerMongooseModels } from '../utils/mongoose';
 import { generateGraphqlEntityQueryFields } from '../utils/graphql';
+import { verify } from '../utils/auth';
 
 const {
   NODE_ENV,
@@ -99,16 +100,14 @@ export const getApplication = async () => {
   await app.register(server.createHandler(), { prefix: '/api/v1' });
 
   app.addHook('onRequest', async (request, reply) => {
-    const { headers, method, routerPath, query, body } = request;
-    if (request.routerPath === '/api/v1/graphql' && NODE_ENV === 'production') {
+    const { headers, routerPath, query } = request;
+    if (routerPath === '/api/v1/graphql' && NODE_ENV === 'production') {
       const token = (query as { token?: string }).token;
       const normalizedHeaders = headers.authorization ? headers : { authorization: `Bearer ${token}` };
 
       try {
-        const user = (await verify({ headers: normalizedHeaders, method, path: routerPath })) as {
-          payload: { _id: string; permissions: string[] };
-        };
-        requestContext.set('auth/user', user.payload);
+        const user = await verify(normalizedHeaders)
+        requestContext.set('auth/user', user);
       } catch (error) {
         reply.code(401);
         reply.send((error as unknown as Error).message);
@@ -161,12 +160,12 @@ export const getApplication = async () => {
 
   await app.register(
     (instance, options, next) => {
-      registerRoutes(instance, protectedRoutes, async ({ headers, method, routerPath, body }, reply) => {
+      registerRoutes(instance, protectedRoutes, async ({ headers, query}, reply) => {
         try {
-          const user = (await verify({ headers, method, path: routerPath })) as {
-            payload: { _id: string; permissions: string[] };
-          };
-          requestContext.set('auth/user', user.payload);
+          const token = (query as { token?: string }).token;
+          const normalizedHeaders = headers.authorization ? headers : { authorization: `Bearer ${token}` };
+          const user = await verify(normalizedHeaders)
+          requestContext.set('auth/user', user);
         } catch (error) {
           reply.code(401);
           reply.send((error as unknown as Error).message);
@@ -179,7 +178,7 @@ export const getApplication = async () => {
 
   await app.register(
     (instance, options, next) => {
-      registerRoutes(instance, tokenRoutes, async ({ headers, method, routerPath }, reply) => {
+      registerRoutes(instance, tokenRoutes, async ({ headers }, reply) => {
         if (NODE_ENV === 'production' && headers.authorization !== `Bearer ${SECRET_TOKEN}`) {
           reply.code(401);
           reply.send('Invalid application secret token');
