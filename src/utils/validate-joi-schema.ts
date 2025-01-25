@@ -16,12 +16,6 @@ export const validateJoiSchema =
   ) => {
     let payload = _.cloneDeep(req[requestPayloadType]);
 
-    if (requestPayloadType === 'headers' && payload['credentials'] !== undefined) {
-      try {
-        payload['credentials'] = JSON.parse(payload['credentials']);
-      } catch (error) {}
-    }
-
     try {
       await schema.validateAsync(
         payload,
