@@ -37,7 +37,7 @@ export const authRoutes: RouteOptions[] = [
           Joi.object({
             email: Joi.string().email().required(),
             password: Joi.string().required(),
-          }),
+          }).required(),
           'body',
         ),
       ],
