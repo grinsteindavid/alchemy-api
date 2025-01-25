@@ -1,5 +1,6 @@
 import MonoContext from '@simplyhexagonal/mono-context';
 import Logger from '@simplyhexagonal/logger';
+
 export const setLogger = (logger: Logger): void => {
   MonoContext.setState({
     ['logger']: logger,

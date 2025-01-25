@@ -1,8 +1,8 @@
 const os = require('os');
 const Logger = require('@simplyhexagonal/logger');
 const { name } = require('./package.json');
-const { setLogger } = require('./src/utils/logger');
 const DiscordTransport = require('@simplyhexagonal/logger-transport-discord');
+const MonoContext = require('@simplyhexagonal/mono-context');
 const { CLUSTER_REGION, CLUSTER_TYPE } = process.env;
 
 const { LoggerTransportName } = Logger;
@@ -28,9 +28,9 @@ const logger = new Logger({
   optionsByLevel: {
     debug: [consoleOptions],
     info: [consoleOptions],
-    warn: [consoleOptions, discordOptions],
-    error: [consoleOptions, discordOptions],
-    fatal: [consoleOptions, discordOptions],
+    warn: process.env.DISCORD_WEBHOOK?.length > 0 ? [consoleOptions, discordOptions] : [consoleOptions],
+    error: process.env.DISCORD_WEBHOOK?.length > 0 ? [consoleOptions, discordOptions] : [consoleOptions],
+    fatal: process.env.DISCORD_WEBHOOK?.length > 0 ? [consoleOptions, discordOptions] : [consoleOptions],
     all: [consoleOptions],
     raw: [consoleOptions],
   },
@@ -46,5 +46,7 @@ const logger = new Logger({
   catchTransportErrors: true,
 });
 
-setLogger(logger);
+MonoContext.setState({
+  ['logger']: logger,
+});
 global.logger = logger;
