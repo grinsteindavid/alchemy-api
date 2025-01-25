@@ -189,13 +189,5 @@ export const getApplication = async () => {
     { prefix: '/api/v1' },
   );
 
-  app.addHook('preHandler', async (request, reply) => {
-    reply.headers({
-      'Cache-Control': 'no-store, no-cache, must-revalidate',
-      Pragma: 'no-cache',
-      Expires: 'Thu, 01 Jan 1970 00:00:00 GMT',
-    });
-  });
-
   return app;
 };
