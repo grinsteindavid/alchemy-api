@@ -122,7 +122,7 @@ export const getApplication = async () => {
     strictPreflight: false,
   });
   await app.register(FastifySwagger, {
-    routePrefix: 'api/:version/doc',
+    routePrefix: 'api/doc',
     exposeRoute: true,
     mode: 'static',
     uiHooks: {
@@ -139,8 +139,7 @@ export const getApplication = async () => {
         if (swaggerToken === SWAGGER_UI_TOKEN) {
           // @ts-ignore
           req.session.set('FastifySwagger|isValid', true);
-          const { version } = req.params as { version: string };
-          reply.redirect(`/api/${version}/doc`);
+          reply.redirect(`/api/doc`);
         }
       },
     },

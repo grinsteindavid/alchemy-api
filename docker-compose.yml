@@ -15,3 +15,13 @@ services:
       PORT: 6378
       REDIS_PORT: 6379
       REDIS_HOST: "redis"
+  mongo:
+    command: --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/mongodb:/data/db
