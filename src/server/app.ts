@@ -30,6 +30,7 @@ const {
   SESSION_SALT,
   SWAGGER_UI_TOKEN,
   DISCORD_WEBHOOK,
+  AUTH_SECRET
 } = process.env;
 
 MonoContext.setState({
@@ -73,7 +74,9 @@ export const getApplication = async () => {
   getLogger().info(
     `Environment Variables - SESSION_SECRET: ${Boolean(SESSION_SECRET)}, SESSION_SALT: ${Boolean(
       SESSION_SALT,
-    )}, SWAGGER_UI_TOKEN: ${Boolean(SWAGGER_UI_TOKEN)}`,
+    )}, AUTH_SECRET: ${Boolean(AUTH_SECRET)}, SECRET_TOKEN: ${Boolean(SECRET_TOKEN)}, SWAGGER_UI_TOKEN: ${Boolean(
+      SWAGGER_UI_TOKEN,
+    )}`,
   );
   
   await app.register(FastifySecureSession, {
@@ -83,12 +86,12 @@ export const getApplication = async () => {
     logLevel: LOG_LEVEL === 'debug' ? 'debug' : 'error',
   });
 
-  const server = new ApolloServer({
+  const apolloServer = new ApolloServer({
     schema: generateGraphqlEntityQueryFields(),
     debug: NODE_ENV !== 'production',
     introspection: true,
   });
-  await server.start();
+  await apolloServer.start();
 
   await app.register(compress, {
     encodings: ['gzip'],
@@ -97,7 +100,7 @@ export const getApplication = async () => {
   await app.register(require('@fastify/multipart'));
   await app.register(fastifyRequestContextPlugin);
   await app.register(printRoutesPlugin);
-  await app.register(server.createHandler(), { prefix: '/api/v1' });
+  await app.register(apolloServer.createHandler(), { prefix: '/api/v1' });
 
   app.addHook('onRequest', async (request, reply) => {
     const { headers, routerPath, query } = request;
